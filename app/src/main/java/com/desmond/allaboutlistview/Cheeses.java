@@ -1,4 +1,4 @@
-package com.desmond.allaboutlistview.ListViewAnimations;
+package com.desmond.allaboutlistview;
 
 /**
  * Created by desmond on 30/10/14.

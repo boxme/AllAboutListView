@@ -50,8 +50,7 @@ import java.util.List;
  * listView.setOnScrollListener(touchListener.makeScrollListener());
  * </pre>
  *
- * <p>This class Requires API level 12 or later due to use of {@link
- * android.view.ViewPropertyAnimator}.</p>
+ * <p>This class Requires API level 11</p>
  *
  * <p>For a generalized {@link View.OnTouchListener} that makes any view dismissable,
  * see {@link SwipeDismissTouchListener}.</p>
@@ -313,6 +312,7 @@ public class SwipeDismissListViewTouchListener implements View.OnTouchListener {
         final ViewGroup.LayoutParams lp = dismissView.getLayoutParams();
         final int originalHeight = dismissView.getHeight();
 
+        // Animate the collapse of the removed view
         ValueAnimator animator = ValueAnimator.ofInt(originalHeight, 1).setDuration(mAnimationTime);
 
         animator.addListener(new AnimatorListenerAdapter() {
@@ -348,6 +348,7 @@ public class SwipeDismissListViewTouchListener implements View.OnTouchListener {
                 // Send a cancel event
                 long time = SystemClock.uptimeMillis();
                 MotionEvent cancelEvent = MotionEvent.obtain(time, time, MotionEvent.ACTION_CANCEL, 0, 0, 0);
+                // Pass the touch screen motion event down to the target view, or this view if it is the target.
                 mListView.dispatchTouchEvent(cancelEvent);
 
                 mPendingDismisses.clear();

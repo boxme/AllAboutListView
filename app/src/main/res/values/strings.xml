@@ -5,5 +5,9 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_list_view_animation">ListViewAnimationActivity</string>
+    <string name="title_activity_list_view_deletion">ListViewDeletion</string>
+    <string name="use_positions">Use Positions</string>
+    <string name="delete_selected">Delete Selected</string>
+    <string name="title_activity_list_view_removal_animation">ListViewRemovalAnimation</string>
 
 </resources>
