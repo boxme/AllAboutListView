@@ -41,24 +41,24 @@ public class ListViewRemovalAnimation extends ActionBarActivity {
             cheeseList.add(Cheeses.sCheeseStrings[i]);
         }
 
-//        SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(
-//                mListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
-//            @Override
-//            public boolean canDismiss(int position) {
-//                return true;
-//            }
-//
-//            @Override
-//            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
-//                StableArrayAdapter adapter = (StableArrayAdapter) listView.getAdapter();
-//                for (int reverseSortedPosition : reverseSortedPositions) {
-//                    adapter.remove(cheeseList.get(reverseSortedPosition));
-//                }
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
-//        mListView.setOnTouchListener(touchListener);
-//        mListView.setOnScrollListener(touchListener.makeScrollListener());
+        SwipeDismissListViewTouchListener touchListener = new SwipeDismissListViewTouchListener(
+                mListView, new SwipeDismissListViewTouchListener.DismissCallbacks() {
+            @Override
+            public boolean canDismiss(int position) {
+                return true;
+            }
+
+            @Override
+            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                StableArrayAdapter adapter = (StableArrayAdapter) listView.getAdapter();
+                for (int reverseSortedPosition : reverseSortedPositions) {
+                    adapter.remove(cheeseList.get(reverseSortedPosition));
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+        mListView.setOnTouchListener(touchListener);
+        mListView.setOnScrollListener(touchListener.makeScrollListener());
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

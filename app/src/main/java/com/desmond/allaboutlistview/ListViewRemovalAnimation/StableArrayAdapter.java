@@ -42,7 +42,7 @@ public class StableArrayAdapter extends ArrayAdapter<String> {
         View view = super.getView(position, convertView, parent);
         if (view != convertView) {
             // Add touch listener to every new view to track swipe motion
-            view.setOnTouchListener(mTouchListener);
+//            view.setOnTouchListener(mTouchListener);
         }
         return view;
     }
