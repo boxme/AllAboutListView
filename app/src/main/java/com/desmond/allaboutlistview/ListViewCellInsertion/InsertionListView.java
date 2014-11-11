@@ -69,6 +69,9 @@ public class InsertionListView extends ListView {
 
     private void init() {
         setDivider(null);
+
+        // To contain screenshot drawable of the cells that were visible before the
+        // data set change, but not after
         mCellBitmapDrawables = new ArrayList<BitmapDrawable>();
     }
 
@@ -81,7 +84,7 @@ public class InsertionListView extends ListView {
         final CustomArrayAdapter adapter = (CustomArrayAdapter) getAdapter();
 
         // Stores the starting bounds and the corresponding bitmap drawables
-        // of every cell present in the ListView before the data set change takes place
+        // of every cell present in the ListView (screenshot) before the data set change takes place
         final HashMap<Long, Rect> listViewItemBounds = new HashMap<Long, Rect>();
         final HashMap<Long, BitmapDrawable> listViewItemDrawables =
                 new HashMap<Long, BitmapDrawable>();
@@ -130,14 +133,17 @@ public class InsertionListView extends ListView {
                     // row of the ListView
                     if (shouldAnimateInImage) {
 
+                        // Final width & height of the animated image should animate to
                         int width = imgView.getWidth();
                         int height = imgView.getHeight();
 
+                        // Location of new cell
                         Point childLoc = getLocationOnScreen(newCell);
                         Point layoutLoc = getLocationOnScreen(mLayout);
 
                         // New item
                         ListItemObject obj = mData.get(0);
+                        // Get a circular bitmap
                         Bitmap bitmap = CustomArrayAdapter.getCroppedBitmap(
                                 BitmapFactory.decodeResource(getContext().getResources(),
                                         obj.getImgResource(), null)
@@ -166,6 +172,8 @@ public class InsertionListView extends ListView {
                         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                                 width, height
                         );
+
+                        // Add the animated imageView to the parent layout
                         mLayout.addView(copyImgView, params);
                     }
                 }
@@ -177,6 +185,8 @@ public class InsertionListView extends ListView {
                     int position = firstVisiblePosition + i;
                     long itemId = adapter.getItemId(position);
                     Rect startRect = listViewItemBounds.get(itemId);
+
+                    // getTop() of the new position
                     int top = child.getTop();
                     int delta;
                     ObjectAnimator animation;
@@ -191,12 +201,15 @@ public class InsertionListView extends ListView {
                         // change but is visible after the change, then use its height
                         // to determine the delta by which it should be animated
                         int childHeight = child.getHeight() + getDividerHeight();
+                        // i == 0 will be animate from outside of screen
                         int startTop = top + (i > 0 ? childHeight : -childHeight);
                         delta = startTop - top;
                     }
                     animation = ObjectAnimator.ofFloat(child, "translationY", delta, 0);
                     animations.add(animation);
 
+                    // Items left will be those were visible before the data set changed, but
+                    // not after
                     listViewItemBounds.remove(itemId);
                     listViewItemDrawables.remove(itemId);
                 }
@@ -208,11 +221,14 @@ public class InsertionListView extends ListView {
                  // the drawables that meet this criteria, they can be redrawn on top
                  // of the ListView via dispatchDraw as they are animating.
                 for (Long itemId : listViewItemBounds.keySet()) {
+                    // Screen shot drawable of the row
                     BitmapDrawable bitmapDrawable = listViewItemDrawables.get(itemId);
                     Rect startBounds = listViewItemBounds.get(itemId);
+                    // Position the drawable to the original position
                     bitmapDrawable.setBounds(startBounds);
 
                     int childHeight = startBounds.bottom - startBounds.top + getDividerHeight();
+                    // New position after animating down
                     Rect endBounds = new Rect(startBounds);
                     endBounds.offset(0, childHeight);
 
@@ -259,6 +275,8 @@ public class InsertionListView extends ListView {
                         invalidate();
                     }
                 });
+
+                // Start all cells animations
                 set.start();
 
                 listViewItemBounds.clear();
@@ -273,12 +291,18 @@ public class InsertionListView extends ListView {
     /**
      * By overriding dispatchDraw, the BitmapDrawables of all the cells that were on the
      * screen before (but not after) the layout are drawn and animated off the screen.
+     *
+     * dispatchDraw is called by the draw to draw the child views
+     * This may be overridden by derived classes to gain control just before its children are drawn
+     * (but after its own view has been drawn).
      */
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
         if (mCellBitmapDrawables.size() > 0) {
             for (BitmapDrawable bitmapDrawable : mCellBitmapDrawables) {
+
+                // Draw the screen shot to the canvas
                 bitmapDrawable.draw(canvas);
             }
         }
@@ -295,11 +319,21 @@ public class InsertionListView extends ListView {
         return new BitmapDrawable(getResources(), bitmap);
     }
 
+    /**
+     * Animate the row if new row is visible in the listView
+     * @return
+     */
     public boolean shouldAnimateInNewRow() {
         int firstVisiblePosition = getFirstVisiblePosition();
         return (firstVisiblePosition == 0);
     }
 
+    /**
+     * Animate the image view only if
+     * 1) it's the only child in the list view
+     * 2) it's getTop() is visible
+     * @return
+     */
     public boolean shouldAnimateInNewImage() {
         if (getChildCount() == 0) {
             return true;

@@ -52,7 +52,7 @@ public class ListViewCellInsertionActivity extends ActionBarActivity
 
         List<ListItemObject> mData = new ArrayList<ListItemObject>();
         CustomArrayAdapter mAdapter = new CustomArrayAdapter(this, R.layout.list_view_item, mData);
-        RelativeLayout mLayout = (RelativeLayout)findViewById(R.id.relative_layout);
+        RelativeLayout layout = (RelativeLayout)findViewById(R.id.relative_layout);
 
         mRoundView = (RoundView)findViewById(R.id.round_view);
         mButton = (Button)findViewById(R.id.add_row_button);
@@ -60,7 +60,7 @@ public class ListViewCellInsertionActivity extends ActionBarActivity
 
         mListView.setAdapter(mAdapter);
         mListView.setData(mData);
-        mListView.setLayout(mLayout);
+        mListView.setLayout(layout);
         mListView.setRowAdditionAnimationListener(this);
     }
 
@@ -73,11 +73,13 @@ public class ListViewCellInsertionActivity extends ActionBarActivity
                 mCellHeight);
 
         boolean shouldAnimateInNewImage = mListView.shouldAnimateInNewImage();
+        // Should not animate new row
         if (!shouldAnimateInNewImage) {
             mListView.addRow(newObj);
             return;
         }
 
+        // Should animate new row
         mListView.setEnabled(false);
         ObjectAnimator animator = mRoundView.getScalingAnimator();
         animator.addListener(new AnimatorListenerAdapter() {
