@@ -10,5 +10,6 @@
     <string name="delete_selected">Delete Selected</string>
     <string name="title_activity_list_view_removal_animation">ListViewRemovalAnimation</string>
     <string name="title_activity_list_view_cell_insertion">ListViewCellInsertionActivity</string>
+    <string name="title_activity_list_view_dragging">ListViewDraggingActivity</string>
 
 </resources>
