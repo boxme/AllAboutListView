@@ -54,6 +54,7 @@ public class CustomArrayAdapter extends ArrayAdapter<ExpandableListItem> {
             convertView = inflater.inflate(mLayoutViewResourceId, parent, false);
         }
 
+        // The visible part before expansion
         LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.item_linear_layout);
         LinearLayout.LayoutParams linearLayoutParams = new LinearLayout.LayoutParams
                 (AbsListView.LayoutParams.MATCH_PARENT, object.getCollapsedHeight());
@@ -61,19 +62,23 @@ public class CustomArrayAdapter extends ArrayAdapter<ExpandableListItem> {
 
         ImageView imgView = (ImageView)convertView.findViewById(R.id.image_view);
         TextView titleView = (TextView)convertView.findViewById(R.id.title_view);
-        TextView textView = (TextView)convertView.findViewById(R.id.text_view);
 
         titleView.setText(object.getTitle());
         imgView.setImageBitmap(getCroppedBitmap(BitmapFactory.decodeResource(getContext()
                 .getResources(), object.getImgResource(), null)));
+
+        // TextView that belongs to the expanded view
+        TextView textView = (TextView)convertView.findViewById(R.id.text_view);
         textView.setText(object.getText());
 
+        // Parent view of the entire ListView item
         convertView.setLayoutParams(new AbsListView.LayoutParams(
                 AbsListView.LayoutParams.MATCH_PARENT,
                 AbsListView.LayoutParams.WRAP_CONTENT));
 
-        ExpandingLayout expandingLayout = (ExpandingLayout)convertView.findViewById(R.id
-                .expanding_layout);
+        // Expandable view
+        ExpandingLayout expandingLayout = (ExpandingLayout) convertView.findViewById(
+                R.id.expanding_layout);
         expandingLayout.setExpandedHeight(object.getExpandedHeight());
         expandingLayout.setSizeChangedListener(object);
 
