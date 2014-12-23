@@ -8,28 +8,32 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.desmond.allaboutlistview.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.desmond.allaboutlistview.ListViewAnimations.ListViewAnimationActivity"
+            android:name=".ListViewAnimations.ListViewAnimationActivity"
             android:label="@string/title_activity_list_view_animation" >
         </activity>
         <activity
-            android:name="com.desmond.allaboutlistview.ListViewDeletion.ListViewDeletionActivity"
+            android:name=".ListViewDeletion.ListViewDeletionActivity"
             android:label="@string/title_activity_list_view_deletion" >
         </activity>
         <activity
-            android:name="com.desmond.allaboutlistview.ListViewRemovalAnimation.ListViewRemovalAnimation"
+            android:name=".ListViewRemovalAnimation.ListViewRemovalAnimation"
             android:label="@string/title_activity_list_view_removal_animation" >
         </activity>
         <activity
-            android:name="com.desmond.allaboutlistview.ListViewCellInsertion.ListViewCellInsertionActivity"
+            android:name=".ListViewCellInsertion.ListViewCellInsertionActivity"
             android:label="@string/title_activity_list_view_cell_insertion" >
         </activity>
         <activity
-            android:name="com.desmond.allaboutlistview.ListViewDraggingAnimation.ListViewDraggingActivity"
+            android:name=".ListViewDraggingAnimation.ListViewDraggingActivity"
             android:label="@string/title_activity_list_view_dragging" >
+        </activity>
+        <activity
+            android:name=".ListViewExpandingCells.ExpandingCellsActivity"
+            android:label="@string/title_activity_expanding_cells" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
