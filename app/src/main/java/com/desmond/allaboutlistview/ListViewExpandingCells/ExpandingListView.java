@@ -77,7 +77,8 @@ public class ExpandingListView extends ListView {
      * required to do this which are outlined below.
      * <p/>
      * 1. Store the current top and bottom bounds of each visible item in the
-     * listview. 2. Update the layout parameters of the selected view. In the
+     * listview.
+     * 2. Update the layout parameters of the selected view. In the
      * context of this method, the view should be originally collapsed and set
      * to some custom height. The layout parameters are updated so as to wrap
      * the content of the additional text that is to be displayed.
@@ -95,9 +96,10 @@ public class ExpandingListView extends ListView {
      * another layout. Since the bounds of the cells cannot be set directly, the
      * method setSelectionFromTop can be used to achieve a very similar effect.
      * 4. The expanding view's bounds are animated to what the final values
-     * should be from the original bounds. 5. The bounds above the expanding
-     * view are animated upwards while the bounds below the expanding view are
-     * animated downwards. 6. The extra text is faded in as its contents become
+     * should be from the original bounds.
+     * 5. The bounds above the expanding view are animated upwards while
+     * the bounds below the expanding view are animated downwards.
+     * 6. The extra text is faded in as its contents become
      * visible throughout the animation process.
      * <p/>
      * It is important to note that the listview is disabled during the
@@ -112,11 +114,13 @@ public class ExpandingListView extends ListView {
         final int oldTop = view.getTop();
         final int oldBottom = view.getBottom();
 
-        final HashMap<View, int[]> oldCoordinates = new HashMap<View, int[]>();
+        final HashMap<View, int[]> oldCoordinates = new HashMap<>();
 
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View v = getChildAt(i);
+            // Set transient state means the framework should attempt to preserve this view
+            // whenever possible
             ViewCompat.setHasTransientState(v, true);
             oldCoordinates.put(v, new int[]{v.getTop(), v.getBottom()});
         }
@@ -182,8 +186,7 @@ public class ExpandingListView extends ListView {
                         firstChildStartTop = 0;
                     }
 
-                    setSelectionFromTop(firstVisiblePosition,
-                            firstChildStartTop - deltaTop);
+                    setSelectionFromTop(firstVisiblePosition, firstChildStartTop - deltaTop);
 
 					/*
 					 * Request another layout to update the layout parameters of
@@ -228,15 +231,13 @@ public class ExpandingListView extends ListView {
                     v.setBottom(old[1]);
                     if (v.getParent() == null)  {
                         mViewsToDraw.add(v);
-                        int delta = old[0] < oldTop ? -yTranslateTop
-                                : yTranslateBottom;
+                        int delta = old[0] < oldTop ? -yTranslateTop : yTranslateBottom;
                         animations.add(getAnimation(v, delta, delta));
                     }
                     else {
                         int i = indexOfChild(v);
                         if (v != view) {
-                            int delta = i > index ? yTranslateBottom
-                                    : -yTranslateTop;
+                            int delta = i > index ? yTranslateBottom : -yTranslateTop;
                             animations.add(getAnimation(v, delta, delta));
                         }
                         ViewCompat.setHasTransientState(v, false);
@@ -286,17 +287,21 @@ public class ExpandingListView extends ListView {
      * steps required to do this which are outlined below.
      * <p/>
      * 1. Update the layout parameters of the view clicked so as to minimize its
-     * height to the original collapsed (default) state. 2. After invoking a
-     * layout, the listview will shift all the cells so as to display them most
-     * efficiently. Therefore, during the first predraw pass, the listview must
-     * be offset by some amount such that given the custom bound change upon
+     * height to the original collapsed (default) state.
+     * 2. After invoking a layout, the listview will shift all the cells so
+     * as to display them most efficiently. Therefore, during the first predraw pass,
+     * the listview must be offset by some amount such that given the custom bound change upon
      * collapse, all the cells that need to be on the screen after the layout
-     * are rendered by the listview. 3. On the second predraw pass, all the
+     * are rendered by the listview.
+     * 3. On the second predraw pass, all the
      * items are first returned to their original location (before the first
-     * layout). 4. The collapsing view's bounds are animated to what the final
-     * values should be. 5. The bounds above the collapsing view are animated
+     * layout).
+     * 4. The collapsing view's bounds are animated to what the final
+     * values should be.
+     * 5. The bounds above the collapsing view are animated
      * downwards while the bounds below the collapsing view are animated
-     * upwards. 6. The extra text is faded out as its contents become visible
+     * upwards.
+     * 6. The extra text is faded out as its contents become visible
      * throughout the animation process.
      */
     private void collapseView(final View view) {
@@ -421,8 +426,7 @@ public class ExpandingListView extends ListView {
                 for (int i = 0; i < childCount; i++) {
                     View v = getChildAt(i);
                     if (v != view) {
-                        float diff = i > index ? -yTranslateBottom
-                                : yTranslateTop;
+                        float diff = i > index ? -yTranslateBottom : yTranslateTop;
                         animations.add(getAnimation(v, diff, diff));
                     }
                 }
