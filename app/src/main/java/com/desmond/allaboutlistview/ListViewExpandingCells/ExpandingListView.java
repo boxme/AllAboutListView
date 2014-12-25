@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
@@ -25,6 +26,8 @@ import java.util.List;
  * to each cell by clicking on the cell to hide and show the extra content
  */
 public class ExpandingListView extends ListView {
+
+    public static final String TAG = ExpandingListView.class.getSimpleName();
 
     private boolean mShouldRemoveObserver = false;
 
@@ -107,7 +110,7 @@ public class ExpandingListView extends ListView {
      * of the items within the listview are not constant during the scroll.
      */
     private void expandView(final View view) {
-        final ExpandableListItem viewObject = (ExpandableListItem)getItemAtPosition(
+        final ExpandableListItem viewObject = (ExpandableListItem) getItemAtPosition(
                 getPositionForView(view));
 
         /* Store the original top and bottom bounds of all the cells. */
@@ -119,8 +122,8 @@ public class ExpandingListView extends ListView {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View v = getChildAt(i);
-            // Set transient state means the framework should attempt to preserve this view
-            // whenever possible
+            // Set transient state means the framework
+            // should attempt to preserve this view whenever possible
             ViewCompat.setHasTransientState(v, true);
             oldCoordinates.put(v, new int[]{v.getTop(), v.getBottom()});
         }
@@ -173,6 +176,8 @@ public class ExpandingListView extends ListView {
                     for (i = 0; i < childCount; i++) {
                         View v = getChildAt(i);
                         int height = v.getBottom() - Math.max(0, v.getTop());
+
+                        // Check if the deltaTop will hide the first child completely
                         if (deltaTop - height > 0) {
                             firstVisiblePosition++;
                             deltaTop -= height;
@@ -186,6 +191,8 @@ public class ExpandingListView extends ListView {
                         firstChildStartTop = 0;
                     }
 
+                    // Move the first visible view to the right position, thereby scrolling
+                    // the listview
                     setSelectionFromTop(firstVisiblePosition, firstChildStartTop - deltaTop);
 
 					/*
@@ -209,11 +216,13 @@ public class ExpandingListView extends ListView {
                 mShouldRemoveObserver = false;
                 observer.removeOnPreDrawListener(this);
 
+                // mTranslate will keep the translated top & bottom dist from the first pass
                 int yTranslateTop = mTranslate[0];
                 int yTranslateBottom = mTranslate[1];
 
                 ArrayList<Animator> animations = new ArrayList<>();
 
+                // Position of the view selected within the listview
                 int index = indexOfChild(view);
 
 				/*
@@ -227,19 +236,33 @@ public class ExpandingListView extends ListView {
 				 */
                 for (View v : oldCoordinates.keySet()) {
                     int[] old = oldCoordinates.get(v);
+
+                    // Put the view back to the original position to prepare for animation
                     v.setTop(old[0]);
                     v.setBottom(old[1]);
+
+                    // Views that will not be visible after expansion
                     if (v.getParent() == null)  {
                         mViewsToDraw.add(v);
+
+                        // Check if it's moved up or down
                         int delta = old[0] < oldTop ? -yTranslateTop : yTranslateBottom;
                         animations.add(getAnimation(v, delta, delta));
                     }
+                    // Views that will still be visible after expansion
                     else {
                         int i = indexOfChild(v);
+
+                        // If v is not the selected/clicked view, then do the animation
                         if (v != view) {
+
+                            // Check if v is above or below the selected/clicked view
                             int delta = i > index ? yTranslateBottom : -yTranslateTop;
                             animations.add(getAnimation(v, delta, delta));
                         }
+
+                        // Allow the view to be recycled. No longer needed
+                        // for further computation
                         ViewCompat.setHasTransientState(v, false);
                     }
                 }
@@ -267,6 +290,7 @@ public class ExpandingListView extends ListView {
                         viewObject.setExpanded(true);
                         setEnabled(true);
                         setClickable(true);
+
                         if (mViewsToDraw.size() > 0) {
                             for (View v : mViewsToDraw) {
                                 ViewCompat.setHasTransientState(v, false);
@@ -276,6 +300,7 @@ public class ExpandingListView extends ListView {
                     }
                 });
                 s.start();
+
                 return true;
             }
         });
@@ -293,9 +318,8 @@ public class ExpandingListView extends ListView {
      * the listview must be offset by some amount such that given the custom bound change upon
      * collapse, all the cells that need to be on the screen after the layout
      * are rendered by the listview.
-     * 3. On the second predraw pass, all the
-     * items are first returned to their original location (before the first
-     * layout).
+     * 3. On the second predraw pass, all the items are first returned to their original
+     * location (before the first layout).
      * 4. The collapsing view's bounds are animated to what the final
      * values should be.
      * 5. The bounds above the collapsing view are animated
@@ -489,6 +513,12 @@ public class ExpandingListView extends ListView {
      * Lastly, this behaviour varies slightly near the bottom of the listview in order
      * to account for the fact that the bottom bounds of the actual listview cannot
      * be modified
+     *
+     * @param top           Old top of the view
+     * @param bottom        Old bottom of the view
+     * @param yDelta        y-dist to be expanded/collapsed
+     * @param isExpanding
+     * @return              top and bottom bound changes
      */
     private int[] getTopAndBottomTranslations(int top, int bottom, int yDelta, boolean isExpanding) {
         int yTranslationTop = 0;
@@ -511,9 +541,15 @@ public class ExpandingListView extends ListView {
             }
         }
         else {
+            // Position of the scrollbar's thumb within the scrollbar's track
             int offset = computeVerticalScrollOffset();
+
+            // Compute the vertical range that the vertical scrollbar represents.
             int range = computeVerticalScrollRange();
+
+            // Get length of scrollbar's thumb
             int extent = computeVerticalScrollExtent();
+
             int leftOverExtent = range - offset - extent;
 
             // Hack to fix negative leftover caused by items not filling view
